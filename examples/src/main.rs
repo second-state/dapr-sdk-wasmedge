@@ -1,7 +1,12 @@
 use serde_json::json;
+use tokio::time::{sleep, Duration};
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    println!("App started. Wait for Dapr sidecar to start ...");
+    sleep(Duration::from_millis(1500)).await;
+    println!("1500 ms have elapsed");
+
     let client = dapr::Dapr::new();
 
     let kvs = json!([
