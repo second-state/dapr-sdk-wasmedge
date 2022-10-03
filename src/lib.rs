@@ -18,15 +18,13 @@ impl Dapr {
     pub async fn save_state (&self, store_name:&str, kvs:Value) -> Result<(), Error> {
         let url = self.url_base.to_string() + "state/" + store_name +"?metadata.contentType=application/json";
 
-        // let mut data = HashMap::new();
-        // data.insert("key", key);
-        // data.insert("value", value);
-
         let client = reqwest::Client::new();
-        client.post(&url)
+        let res = client.post(&url)
             .json(&kvs)
             .send()
             .await?;
+
+        println!("Status code is {}", res.status().as_str());
         Ok(())
     }
 
@@ -58,9 +56,10 @@ impl Dapr {
     pub async fn delete_state (&self, store_name:&str, key:&str) -> Result<(), Error> {
         let url = self.url_base.to_string() + "state/" + store_name + "/" + key + "?metadata.contentType=application/json";
         let client = reqwest::Client::new();
-        client.delete(&url)
+        let res = client.delete(&url)
             .send()
             .await?;
+        println!("Status code is {}", res.status().as_str());
         Ok(())
     }
 
@@ -68,10 +67,11 @@ impl Dapr {
         let url = self.url_base.to_string() + "state/" + store_name + "/transaction?metadata.contentType=application/json";
 
         let client = reqwest::Client::new();
-        client.post(&url)
+        let res = client.post(&url)
             .json(&ops)
             .send()
             .await?;
+        println!("Status code is {}", res.status().as_str());
         Ok(())
     }
 }
