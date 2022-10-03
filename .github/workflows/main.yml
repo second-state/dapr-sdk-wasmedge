@@ -1,0 +1,55 @@
+name: main
+
+on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'info'
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+      
+    - name: Install apt-get packages
+      run: |
+        sudo ACCEPT_EULA=Y apt-get update
+        sudo ACCEPT_EULA=Y apt-get upgrade
+        sudo apt-get install wget git curl software-properties-common build-essential libjpeg-dev libpng-dev cmake
+    
+    - name: Install Rust target for wasm
+      run: |
+        rustup target add wasm32-wasi
+        
+    - name: Install WasmEdge
+      run: |
+        VERSION=0.11.1
+        curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | sudo bash -s -- -e all --version=$VERSION --tf-version=$VERSION --tf-deps-version=$VERSION --tf-tools-version=$VERSION --image-version=$VERSION --image-deps-version=$VERSION  -p /usr/local
+        
+    - name: Install and init dapr
+      run: |
+        wget -q https://raw.githubusercontent.com/dapr/cli/master/install/install.sh -O - | /bin/bash
+        dapr init
+    
+    - name: Client example
+      run: |
+        cd examples
+        cargo build --target wasm32-wasi --release
+        wasmedgec target/wasm32-wasi/release/dapr_examples.wasm dapr_examples.wasm
+        resp=$(wasmedge dapr_examples.wasm 2>&1)
+        echo "$resp"
+        if [[ $resp == *"planet"* ]]; then
+          echo -e "Execution Success!"
+        else
+          echo -e "Execution Fail!"
+          exit 1
+        fi

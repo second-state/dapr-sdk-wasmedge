@@ -1,0 +1,19 @@
+[package]
+name = "dapr_sdk_wasi"
+version = "0.0.1"
+license = "MIT"
+description = "The Dapr SDK for WebAssembly."
+repository = "https://github.com/second-state/dapr-sdk-wasi"
+authors = ["Michael Yuan <michael@secondstate.io>"]
+readme = "README.md"
+keywords = ["dapr", "microservice", "cloud-native", "wasmedge", "webassembly"]
+edition = "2018"
+
+[lib]
+name = "dapr"
+path = "src/lib.rs"
+
+[dependencies]
+serde_json = "1.0"
+reqwest_wasi = { version = "0.11", features = ["json"] }
+tokio_wasi = { version = "1.21", features = ["rt", "macros", "net", "time"]}
