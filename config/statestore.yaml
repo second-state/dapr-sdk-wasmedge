@@ -1,0 +1,13 @@
+apiVersion: dapr.io/v1
+kind: Component
+metadata:
+  name: starwars
+spec:
+  type: state.redis
+  metadata:
+    - name: redisHost
+      value: localhost:6379
+    - name: redisPassword
+      value: ""
+    - name: actorStateStore
+      value: "true"

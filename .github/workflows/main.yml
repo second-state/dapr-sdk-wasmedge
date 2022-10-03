@@ -45,11 +45,5 @@ jobs:
         cd examples
         cargo build --target wasm32-wasi --release
         wasmedgec target/wasm32-wasi/release/dapr_examples.wasm dapr_examples.wasm
-        resp=$(wasmedge dapr_examples.wasm 2>&1)
-        echo "$resp"
-        if [[ $resp == *"planet"* ]]; then
-          echo -e "Execution Success!"
-        else
-          echo -e "Execution Fail!"
-          exit 1
-        fi
+        dapr run --app-id wasmedge-examples --app-protocol http --app-port 9005 --dapr-http-port 3503 --components-path config --log-level debug wasmedge dapr_examples.wasm
+
