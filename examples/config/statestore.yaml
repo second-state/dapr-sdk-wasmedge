@@ -1,4 +1,4 @@
-apiVersion: dapr.io/v1
+apiVersion: dapr.io/v1alpha1
 kind: Component
 metadata:
   name: starwars
