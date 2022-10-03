@@ -17,6 +17,7 @@ impl Dapr {
 impl Dapr {
     pub async fn save_state (&self, store_name:&str, kvs:Value) -> Result<(), Error> {
         let url = self.url_base.to_string() + "state/" + store_name +"?metadata.contentType=application/json";
+        println!("URL is {}", url);
 
         let client = reqwest::Client::new();
         let res = client.post(&url)

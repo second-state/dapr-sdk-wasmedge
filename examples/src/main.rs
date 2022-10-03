@@ -9,6 +9,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 
     let client = dapr::Dapr::new(3503);
 
+    /*
     let kvs = json!([
         {
           "key": "weapon",
@@ -19,6 +20,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
           "value": {
             "name": "Tatooine"
           }
+        }
+    ]);
+    */
+    let kvs = json!([
+        {
+          "key": "weapon",
+          "value": "DeathStar"
         }
     ]);
     client.save_state("starwars", kvs).await?;
