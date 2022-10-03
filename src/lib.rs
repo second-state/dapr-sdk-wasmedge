@@ -3,13 +3,13 @@ use serde_json::Value;
 use reqwest::Error;
 
 pub struct Dapr {
-    url_base: &'static str,
+    pub url_base: String,
 }
 
 impl Dapr {
-    pub fn new() -> Dapr {
+    pub fn new(port: u32) -> Dapr {
         Dapr {
-            url_base: "http://localhost:3503/v1.0/",
+            url_base: "http://localhost:".to_string() + &(port.to_string()) + "/v1.0/",
         }
     }
 }

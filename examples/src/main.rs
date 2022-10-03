@@ -7,13 +7,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     sleep(Duration::from_millis(1500)).await;
     println!("1500 ms have elapsed");
 
-    let client = dapr::Dapr::new();
+    let client = dapr::Dapr::new(3503);
 
     let kvs = json!([
         {
           "key": "weapon",
-          "value": "DeathStar",
-          "etag": "1234"
+          "value": "DeathStar"
         },
         {
           "key": "planet",
@@ -23,6 +22,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         }
     ]);
     client.save_state("starwars", kvs).await?;
+    println!("Saved!");
 
     let val = client.get_state("starwars", "weapon").await?;
     println!("State for weapon: {}", val);
@@ -33,6 +33,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     println!("State for weapon and planet: {}", val);
 
     client.delete_state("starwars", "weapon").await?;
+    println!("Deleted!");
 
     let ops = json!({
         "operations": [
@@ -62,6 +63,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         }
     });
     client.transact_state("starwars", ops).await?;
+    println!("Transacted!");
 
     Ok(())
 }
