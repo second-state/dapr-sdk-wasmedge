@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use serde_json::Value;
-use reqwest::Error;
+use anyhow::{anyhow, Error};
 
 pub struct Dapr {
     pub url_base: String,
@@ -15,8 +15,8 @@ impl Dapr {
 }
 
 impl Dapr {
-    pub async fn save_state (&self, store_name:&str, kvs:Value) -> Result<(), Error> {
-        let url = self.url_base.to_string() + "state/" + store_name;
+    pub async fn invoke_service (&self, app_id:&str, method_name:&str, kvs:Value) -> Result<(), Error> {
+        let url = self.url_base.to_string() + "invoke/" + app_id + "/method/" + method_name;
         println!("URL is {}", url);
 
         let client = reqwest::Client::new();
@@ -27,6 +27,23 @@ impl Dapr {
 
         println!("Status code is {}", res.status().as_str());
         Ok(())
+    }
+
+    pub async fn save_state (&self, store_name:&str, kvs:Value) -> Result<(), Error> {
+        let url = self.url_base.to_string() + "state/" + store_name;
+        println!("URL is {}", url);
+
+        let client = reqwest::Client::new();
+        let res = client.post(&url)
+            .json(&kvs)
+            .send()
+            .await?;
+
+        if res.status().as_u16() == 204 {
+            Ok(())
+        } else {
+            Err(anyhow!("Dapr failed to save the state! Status code: {}", res.status().as_str()))
+        }
     }
 
     pub async fn get_state (&self, store_name:&str, key:&str) -> Result<Value, Error> {
@@ -65,8 +82,12 @@ impl Dapr {
         let res = client.delete(&url)
             .send()
             .await?;
-        println!("Status code is {}", res.status().as_str());
-        Ok(())
+
+        if res.status().as_u16() == 204 {
+            Ok(())
+        } else {
+            Err(anyhow!("Dapr failed to delete the state! Status code: {}", res.status().as_str()))
+        }
     }
 
     pub async fn transact_state (&self, store_name:&str, ops:Value) -> Result<(), Error> {
@@ -78,7 +99,25 @@ impl Dapr {
             .json(&ops)
             .send()
             .await?;
+
+        if res.status().as_u16() == 204 {
+            Ok(())
+        } else {
+            Err(anyhow!("Dapr failed to complete the state tx! Status code: {}", res.status().as_str()))
+        }
+    }
+
+    pub async fn is_healthy (&self) -> Result<(), Error> {
+        let url = self.url_base.to_string() + "healthz/";
+        println!("URL is {}", url);
+
+        let res = reqwest::get(&url).await?;
         println!("Status code is {}", res.status().as_str());
-        Ok(())
+
+        if res.status().as_u16() == 204 {
+            Ok(())
+        } else {
+            Err(anyhow!("Dapr is not healthy! Status code: {}", res.status().as_str()))
+        }
     }
 }

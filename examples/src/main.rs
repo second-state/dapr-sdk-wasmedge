@@ -9,6 +9,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 
     let client = dapr::Dapr::new(3503);
 
+    client.is_healthy().await?;
+    println!("Dapr is healthy!");
+
     let kvs = json!([
         {
           "key": "weapon",
@@ -21,14 +24,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
           }
         }
     ]);
-    /*
-    let kvs = json!([
-        {
-          "key": "weapon",
-          "value": "DeathStar"
-        }
-    ]);
-    */
     client.save_state("starwars", kvs).await?;
     println!("Saved!");
 
