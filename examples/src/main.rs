@@ -9,8 +9,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 
     let client = dapr::Dapr::new(3503);
 
+    // It will not be ready until we start the application service
+    /*
     client.is_healthy().await?;
     println!("Dapr is healthy!");
+    */
 
     let kvs = json!([
         {
