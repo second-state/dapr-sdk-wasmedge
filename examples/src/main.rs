@@ -42,6 +42,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 
     client.delete_state("starwars", "weapon").await?;
     println!("Deleted!");
+    
+    let keys = vec!["weapon", "planet"]
+        .into_iter().map(|s| s.to_owned()).collect();
+    let val = client.get_bulk_state("starwars", keys).await?;
+    println!("State for weapon and planet: {}", val);
 
     let ops = json!({
         "operations": [
@@ -65,13 +70,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
               "key": "key2"
             }
           }
-        ],
-        "metadata": {
-          "partitionKey": "planet"
-        }
+        ]
     });
     client.transact_state("starwars", ops).await?;
     println!("Transacted!");
+
+    let keys = vec!["weapon", "planet", "key1", "key2"]
+        .into_iter().map(|s| s.to_owned()).collect();
+    let val = client.get_bulk_state("starwars", keys).await?;
+    println!("State for weapon, planet, key1 and key2: {}", val);
 
     Ok(())
 }
