@@ -78,5 +78,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let val = client.get_bulk_state("starwars", keys).await?;
     println!("State for weapon, planet, key1 and key2: {}", val);
 
+    let val = client.get_secret("local-store", "DB_URL").await?;
+    println!("Secret for DB_URL: {}", val);
+
+    let val = client.get_secret("local-store", "DB_URL:MYSQL").await?;
+    println!("Secret for DB_URL:MYSQL {}", val);
+
     Ok(())
 }

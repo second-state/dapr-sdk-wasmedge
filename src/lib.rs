@@ -107,6 +107,17 @@ impl Dapr {
         }
     }
 
+    pub async fn get_secret (&self, store_name:&str, key:&str) -> Result<Value, Error> {
+        let url = self.url_base.to_string() + "secrets/" + store_name + "/" + key;
+        println!("URL is {}", url);
+
+        let json = reqwest::get(&url)
+            .await?
+            .json()
+            .await?;
+        Ok(json)
+    }
+
     pub async fn is_healthy (&self) -> Result<(), Error> {
         let url = self.url_base.to_string() + "healthz/";
         println!("URL is {}", url);
