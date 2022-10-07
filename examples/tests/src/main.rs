@@ -16,8 +16,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let val = client.invoke_service("echo-service", "echo", kvs).await?;
     println!("Echo: {}", val);
 
-    // This is the current sidecar
-    let client = dapr::Dapr::new(3503);
+    // let client = dapr::Dapr::new(3503);
 
     let kvs = json!([
         {

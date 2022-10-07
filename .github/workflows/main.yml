@@ -45,13 +45,16 @@ jobs:
         cd examples/echo
         cargo build --target wasm32-wasi --release
         wasmedgec target/wasm32-wasi/release/dapr_echo.wasm dapr_echo.wasm
-        nohup dapr run --app-id echo-service --app-protocol http --app-port 9004 --dapr-http-port 3502 --components-path ../config --log-level debug wasmedge dapr_echo.wasm &
+        nohup dapr run --app-id echo-service --app-protocol http --app-port 9004 --dapr-http-port 3502 --components-path ../config --log-level debug wasmedge dapr_echo.wasm > server.log 2>&1 &
         sleep 15
 
-    - name: tests
+    - name: Run tests
       run: |
         cd examples/tests
         cargo build --target wasm32-wasi --release
         wasmedgec target/wasm32-wasi/release/dapr_examples.wasm dapr_examples.wasm
-        dapr run --app-id wasmedge-examples --app-protocol http --app-port 9005 --dapr-http-port 3503 --components-path ../config --log-level debug wasmedge dapr_examples.wasm
+        wasmedge dapr_examples.wasm
 
+    - name: Dump the server log
+      run: |
+        cat server.log
