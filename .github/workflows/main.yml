@@ -57,4 +57,5 @@ jobs:
 
     - name: Dump the server log
       run: |
+        cd examples/echo
         cat server.log
