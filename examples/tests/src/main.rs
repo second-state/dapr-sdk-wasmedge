@@ -12,11 +12,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     client.is_healthy().await?;
     println!("Dapr echo is healthy!");
 
-    // This is the current sidecar
     let kvs = json!({ "message": "WasmEdge" });
-    let client = dapr::Dapr::new(3503);
     let val = client.invoke_service("echo-service", "echo", kvs).await?;
     println!("Echo: {}", val);
+
+    // This is the current sidecar
+    let client = dapr::Dapr::new(3503);
 
     let kvs = json!([
         {
