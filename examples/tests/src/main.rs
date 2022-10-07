@@ -7,13 +7,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     sleep(Duration::from_millis(1500)).await;
     println!("1500 ms have elapsed");
 
-    let client = dapr::Dapr::new(3503);
-
-    // It will not be ready until we start the application service
-    /*
+    // This is the echo sidecar
+    let client = dapr::Dapr::new(3502);
     client.is_healthy().await?;
-    println!("Dapr is healthy!");
-    */
+    println!("Dapr echo is healthy!");
+
+    // This is the current sidecar
+    let kvs = json!({ "message": "WasmEdge" });
+    let client = dapr::Dapr::new(3503);
+    let val = client.invoke_service("echo-service", "echo", kvs).await?;
+    println!("Echo: {}", val);
 
     let kvs = json!([
         {

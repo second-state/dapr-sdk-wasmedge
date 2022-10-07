@@ -1,0 +1,9 @@
+[package]
+name = "dapr_examples"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serde_json = "1.0"
+tokio_wasi = { version = "1.21", features = ["rt", "macros", "net", "time"]}
+dapr_sdk_wasi = { path = "../../" }

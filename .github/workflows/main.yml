@@ -40,10 +40,18 @@ jobs:
         wget -q https://raw.githubusercontent.com/dapr/cli/master/install/install.sh -O - | /bin/bash
         dapr init
     
-    - name: Client example
+    - name: Run echo
       run: |
-        cd examples
+        cd examples/echo
+        cargo build --target wasm32-wasi --release
+        wasmedgec target/wasm32-wasi/release/dapr_echo.wasm dapr_echo.wasm
+        nohup dapr run --app-id echo-service --app-protocol http --app-port 9004 --dapr-http-port 3502 --components-path ../config --log-level debug wasmedge dapr_echo.wasm &
+        sleep 15
+
+    - name: tests
+      run: |
+        cd examples/tests
         cargo build --target wasm32-wasi --release
         wasmedgec target/wasm32-wasi/release/dapr_examples.wasm dapr_examples.wasm
-        dapr run --app-id wasmedge-examples --app-protocol http --app-port 9005 --dapr-http-port 3503 --components-path config --log-level debug wasmedge dapr_examples.wasm
+        dapr run --app-id wasmedge-examples --app-protocol http --app-port 9005 --dapr-http-port 3503 --components-path ../config --log-level debug wasmedge dapr_examples.wasm
 

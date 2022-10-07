@@ -15,18 +15,18 @@ impl Dapr {
 }
 
 impl Dapr {
-    pub async fn invoke_service (&self, app_id:&str, method_name:&str, kvs:Value) -> Result<(), Error> {
+    pub async fn invoke_service (&self, app_id:&str, method_name:&str, kvs:Value) -> Result<Value, Error> {
         let url = self.url_base.to_string() + "invoke/" + app_id + "/method/" + method_name;
         println!("URL is {}", url);
 
         let client = reqwest::Client::new();
-        let res = client.post(&url)
+        let json = client.post(&url)
             .json(&kvs)
             .send()
+            .await?
+            .json()
             .await?;
-
-        println!("Status code is {}", res.status().as_str());
-        Ok(())
+        Ok(json)
     }
 
     pub async fn save_state (&self, store_name:&str, kvs:Value) -> Result<(), Error> {
