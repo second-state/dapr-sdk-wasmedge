@@ -1,18 +1,19 @@
-# dapr-sdk-wasi
+# Dapr SDK for WebAssembly
 
-A Dapr SDK in Rust. dapr-sdk-wasi is designed to run in WasmEdge application.
+Written in Rust, the *dapr_sdk_wasi* crate can be compiled into WebAssembly and runs in the [WasmEdge Runtime](https://github.com/wasmedge).
 
-[Introduction](#introduction) | [How it works](#how-it-works) | [Usage](#usage) | [Contribution](#contribution)
+[Introduction](#introduction) | [How it works](#how-it-works) | [Contribution](#contribution)
 
 ## Introduction
 
-> This is an experimental project now.
+> This software is still under development, we [welcome new contributors](#contribution)!
 
-WebAssembly is an ideal environment to [run microservices](https://medium.com/wasm/cloud-native-webassembly-in-service-mesh-b19e3a96ccf8) with high performance and security. 
+WebAssembly provides a secure, fast, and lightweight runtime sandbox for cloud-native applications, especially for [microservices](https://github.com/second-state/microservice-rust-mysql), as [an alternative to Linux containers and VMs](https://wasmedge.org/wasm_linux_container/). The *dapr_sdk_wasi* crate is a Rust SDK for the [Dapr framework](https://dapr.io/). It provides an easy way for Rust-based microservices in WasmEdge to interact with Dapr APIs and sidecar services. The figure below shows a Dapr-enabled microservice running inside the WasmEdge sandbox.
 
-Unfortunately, the official Dapr Rust SDK couldn't be compiled into a WASI program, so we rewrote the Dapr sdk in reqwest(a popular HTTP client for Rust) to make it could run in WasmEdge. 
+![](dapr-sdk-wasi.png)
 
-Now the dapr-sdk-wasi supports service invocation, state management, secrets, and health APIs.
+Currently, the dapr-sdk-wasi supports Dapr's service invocation, state management, secrets, and health APIs.
+
 
 | Dapr API               | Status     |
 |------------------------|------------|
@@ -29,13 +30,14 @@ Now the dapr-sdk-wasi supports service invocation, state management, secrets, an
 
 
 ## How it works
-There are two parts in this repo. One is the SDK, and the other is the example to demonstrate how to use dapr-wasi-sdk to acess Dapr API.
 
-* The whole project is the SDK itself, which is responsible for the web services provided by Dapr (ie, Dapr API).
-* `examples/echo` is a sidecar demo built by the dapr-sdk-wasi, which accesses the service invocation, state management, secrets, and health APIs
-* `examples/test` is to verify the web service in `examples/echo`
+This repo contains the SDK, a Dapr service example, and an example client to access the Dapr service using the SDK.
 
-If you want to run the `echo` example, follow the following instructions.
+* The root project is the SDK, which is provides a Rust API to call Dapr API services.
+* `examples/echo` is a microservice demo that runs with a Dapr sidecar.
+* `examples/tests` is a SDK client that accesses Dapr APIs on the sidecar.
+
+If you want to run the `echo` example and SDK tests, follow the following instructions.
 
 ### Install Rust and add Wasi target for the Rust compiler
 
@@ -43,11 +45,13 @@ If you want to run the `echo` example, follow the following instructions.
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 rustup target add wasm32-wasi
 ```
+
 ### Install WasmEdge
 
 ```
 curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash
 ```
+
 ### Install and init Dapr
 
 ```
@@ -55,31 +59,62 @@ wget -q https://raw.githubusercontent.com/dapr/cli/master/install/install.sh -O 
 dapr init
 ```
 
-### Run `echo` examples
+### Run the `echo` example
+
 ```
 cd examples/echo
+
 // compile the rust code to wasm 
 cargo build --target wasm32-wasi --release
-// run the SDK in AOT model
 wasmedgec target/wasm32-wasi/release/dapr_echo.wasm dapr_echo.wasm
-// Access Dapr API
-nohup dapr run --app-id echo-service --app-protocol http --app-port 9004 --dapr-http-port 3502 --components-path ../config --log-level debug wasmedge dapr_echo.wasm > server.log 2>&1 &
-// return the server log
+
+// Use Dapr to start the echo microservice application
+dapr run --app-id echo-service --app-protocol http --app-port 9004 --dapr-http-port 3502 --components-path ../config --log-level debug wasmedge dapr_echo.wasm
+
+// Shows the server log
 ℹ️  Starting Dapr with id echo-service. HTTP Port: 3502. gRPC Port: 44517
 time="2022-10-07T22:00:17.732779744Z" level=info msg="starting Dapr Runtime -- version 1.8.4 -- commit 18575823c74318c811d6cd6f57ffac76d5debe93" app_id=echo-service instance=fv-az186-200 scope=dapr.runtime type=log ver=1.8.4
 time="2022-10-07T22:00:17.732813444Z" level=info msg="log level set to: debug" app_id=echo-service instance=fv-az186-200 scope=dapr.runtime type=log ver=1.8.4
 ···
 ```
 
-## Usage
+### Run the SDK tests
 
-This project allows developers to run a complete microservice sidecar in WasmEdge, without any host applications and [Linux containers](https://wasmedge.org/wasm_linux_container/). See an example [here](https://github.com/second-state/dapr-wasm).
+Do the following from another terminal window from the `echo` service.
 
-The following image shows how dapr-wasi-sdk works with the microservice sidecar and the Dapr sidecar. dapr-wasi-sdk is responsible for the communication with Dapr sidecar.
+```
+cd examples/tests
 
-![](dapr-sdk-wasi.png)
+// compile the SDK testing code to wasm
+cargo build --target wasm32-wasi --release
+wasmedgec target/wasm32-wasi/release/dapr_examples.wasm dapr_examples.wasm
 
+// Run the tests to interact with the `echo` service's Dapr sidecar from WasmEdge
+wasmedge dapr_examples.wasm
 
+// Results from the tests on the console
+URL is http://localhost:3502/v1.0/healthz/
+Status code is 204
+Dapr echo is healthy!
+URL is http://localhost:3502/v1.0/invoke/echo-service/method/echo
+Echo: {"message":"WasmEdge"}
+URL is http://localhost:3502/v1.0/state/starwars
+Saved!
+URL is http://localhost:3502/v1.0/state/starwars/weapon
+State for weapon: "DeathStar"
+URL is http://localhost:3502/v1.0/state/starwars/bulk
+State for weapon and planet: [{"data":"DeathStar","etag":"1","key":"weapon"},{"data":{"name":"Tatooine"},"etag":"1","key":"planet"}]
+URL is http://localhost:3502/v1.0/state/starwars/weapon
+Deleted!
+URL is http://localhost:3502/v1.0/state/starwars/bulk
+State for weapon and planet: [{"key":"weapon"},{"data":{"name":"Tatooine"},"etag":"1","key":"planet"}]
+URL is http://localhost:3502/v1.0/state/starwars/transaction
+Transacted!
+URL is http://localhost:3502/v1.0/state/starwars/bulk
+State for weapon, planet, key1 and key2: [{"key":"weapon"},{"data":{"name":"Tatooine"},"etag":"1","key":"planet"},{"data":"myData","etag":"1","key":"key1"},{"key":"key2"}]
+URL is http://localhost:3502/v1.0/secrets/local-store/DB_URL:MYSQL
+Secret for DB_URL:MYSQL {"DB_URL:MYSQL":"***127.0.0.1:3306/mysql"}
+```
 
 ## Contribution
 
@@ -88,7 +123,9 @@ Any feedback is appreciated. If you have any questions or suggestions, please ra
 If you prefer chatting in real-time, join our [Discord server](https://discord.gg/U4B5sFTkFc).
 
 ## Tech stacks used in this project
+
 * Tokio
-* Reqwest-wasi
+* hyper
+* reqwest
 * Dapr
 * WasmEdge
