@@ -83,6 +83,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 
     let val = client.get_secret("local-store", "DB_URL:MYSQL").await?;
     println!("Secret for DB_URL:MYSQL {}", val);
+    
+    let kvs = json!([
+        {
+          "rawPayload": "true"        
+        }, 
+    ]);
+
+    let val = client.publish("pubsubName", "deathStarStatus",kvs).await?;
+    println!("Published to pubsubName topic deathStarStatus | Respose: {}",val);
 
     Ok(())
 }
