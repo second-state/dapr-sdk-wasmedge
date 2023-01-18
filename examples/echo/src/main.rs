@@ -3,7 +3,7 @@ use hyper::{Body, Method, Request, Response, StatusCode, Server};
 use std::convert::Infallible;
 use std::net::SocketAddr;
 use std::result::Result;
-
+use serde_json::json;
 
 async fn handle_request(req: Request<Body>) -> Result<Response<Body>, anyhow::Error> {
     match (req.method(), req.uri().path()) {
@@ -12,7 +12,9 @@ async fn handle_request(req: Request<Body>) -> Result<Response<Body>, anyhow::Er
         ))),
 
         (&Method::POST, "/echo") => Ok(Response::new(req.into_body())),
-
+        (&Method::POST, "/A") => Ok(Response::new(req.into_body())),
+        (&Method::POST, "/B") => Ok(Response::new(req.into_body())),
+        
         _ => {
             let mut not_found = Response::default();
             *not_found.status_mut() = StatusCode::NOT_FOUND;

@@ -86,12 +86,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     
     let kvs = json!([
         {
-          "rawPayload": "true"        
+          "key": "value"        
         }, 
     ]);
 
-    let val = client.publish("pubsubName", "deathStarStatus",kvs).await?;
-    println!("Published to pubsubName topic deathStarStatus | Respose: {}",val);
+    client.publish("pubsub", "A",kvs).await?;
+    println!("Published to pubsubname: pubsub topic: A"); 
+
+    let kvs = json!([
+        {
+          "key2": "val2"        
+        }, 
+    ]);
+
+    client.publish("pubsub", "B",kvs).await?;
+    println!("Published to pubsubname: pubsub topic: B"); 
+
 
     Ok(())
 }
