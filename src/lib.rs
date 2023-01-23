@@ -135,7 +135,7 @@ impl Dapr {
 
         let client = reqwest::Client::new();
         let res = client.post(&url).json(&metadata).send().await?;
-        println!("Status code is {}", res.status());
+        println!("Status code is {}", res.status().as_str());
 
         if res.status().as_u16() == 204 {
             Ok(())

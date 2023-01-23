@@ -12,8 +12,28 @@ async fn handle_request(req: Request<Body>) -> Result<Response<Body>, anyhow::Er
         ))),
 
         (&Method::POST, "/echo") => Ok(Response::new(req.into_body())),
-        (&Method::POST, "/A") => Ok(Response::new(req.into_body())),
-        (&Method::POST, "/B") => Ok(Response::new(req.into_body())),
+        (&Method::GET, "/dapr/subscribe") => Ok(Response::new(Body::from(json!([
+                                                                                        {
+                                                                                             "pubsubname":"pubsub",
+                                                                                             "topic":"A",
+                                                                                             "route":"A",
+                                                                                        },
+                                                                                        {
+                                                                                             "pubsubname":"pubsub",
+                                                                                             "topic":"B",
+                                                                                             "route":"B",
+                                                                                        }
+
+        ]).to_string()))),
+        (&Method::POST, "/A") => {
+            println!("Received from A");
+            Ok(Response::default())
+        },
+        (&Method::POST, "/B") =>  {
+            println!("Received from B");
+            Ok(Response::default())
+        },
+
         
         _ => {
             let mut not_found = Response::default();
