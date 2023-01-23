@@ -37,15 +37,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     println!("State for weapon: {}", val);
 
     let keys = vec!["weapon", "planet"]
-        .into_iter().map(|s| s.to_owned()).collect();
+        .into_iter()
+        .map(|s| s.to_owned())
+        .collect();
     let val = client.get_bulk_state("starwars", keys).await?;
     println!("State for weapon and planet: {}", val);
 
     client.delete_state("starwars", "weapon").await?;
     println!("Deleted!");
-    
+
     let keys = vec!["weapon", "planet"]
-        .into_iter().map(|s| s.to_owned()).collect();
+        .into_iter()
+        .map(|s| s.to_owned())
+        .collect();
     let val = client.get_bulk_state("starwars", keys).await?;
     println!("State for weapon and planet: {}", val);
 
@@ -77,31 +81,32 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     println!("Transacted!");
 
     let keys = vec!["weapon", "planet", "key1", "key2"]
-        .into_iter().map(|s| s.to_owned()).collect();
+        .into_iter()
+        .map(|s| s.to_owned())
+        .collect();
     let val = client.get_bulk_state("starwars", keys).await?;
     println!("State for weapon, planet, key1 and key2: {}", val);
 
     let val = client.get_secret("local-store", "DB_URL:MYSQL").await?;
     println!("Secret for DB_URL:MYSQL {}", val);
-    
-    let kvs = json!([
-        {
-          "key": "value"        
-        }, 
-    ]);
-
-    client.publish("pubsub", "A",kvs).await?;
-    println!("Published to pubsubname: pubsub topic: A"); 
 
     let kvs = json!([
         {
-          "key2": "val2"        
-        }, 
+          "key": "value"
+        },
     ]);
 
-    client.publish("pubsub", "B",kvs).await?;
-    println!("Published to pubsubname: pubsub topic: B"); 
+    client.publish("pubsub", "A", kvs).await?;
+    println!("Published to pubsubname: pubsub topic: A");
 
+    let kvs = json!([
+        {
+          "key2": "val2"
+        },
+    ]);
+
+    client.publish("pubsub", "B", kvs).await?;
+    println!("Published to pubsubname: pubsub topic: B");
 
     Ok(())
 }
