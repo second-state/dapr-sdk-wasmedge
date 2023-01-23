@@ -26,11 +26,11 @@ async fn handle_request(req: Request<Body>) -> Result<Response<Body>, anyhow::Er
 
         ]).to_string()))),
         (&Method::POST, "/A") => {
-            println!("Received from A");
+            println!("Received from A {}",String::from_utf8(hyper::body::to_bytes(req.into_body()).await?.to_vec()).unwrap());
             Ok(Response::default())
         },
         (&Method::POST, "/B") =>  {
-            println!("Received from B");
+            println!("Received from B {}",String::from_utf8(hyper::body::to_bytes(req.into_body()).await?.to_vec()).unwrap());
             Ok(Response::default())
         },
 
