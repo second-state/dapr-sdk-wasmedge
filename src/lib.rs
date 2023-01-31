@@ -129,7 +129,12 @@ impl Dapr {
         }
     }
 
-    pub async fn publish(&self, pubsubname: &str, topic_name: &str, metadata:Value) -> Result<(), Error> {
+    pub async fn publish(
+        &self,
+        pubsubname: &str,
+        topic_name: &str,
+        metadata: Value,
+    ) -> Result<(), Error> {
         let url = self.url_base.to_string() + "publish/" + pubsubname + "/" + topic_name;
         println!("URL is {}", url);
 
@@ -146,41 +151,4 @@ impl Dapr {
             ))
         }
     }
-    
-    // pub async fn subscribe(&self, topics:Value) -> Result<Value, Error> {
-    //     let url = self.url_base.to_string() + "dapr/subscribe";
-    //     println!("URL is {}", url);
-
-    //     let client = reqwest::Client::new();
-    //     let res = client.get(&url).json(&topics).send().await?;
-    //     println!("Status code is {}", res.status());
-
-    //     if res.status().as_u16() == 204 {
-    //         Ok(res.json().await?)
-    //     } else {
-    //         Err(anyhow!(
-    //             "Dapr failed to complete the subscribe request! Status code: {}",
-    //             res.status().as_str()
-    //         ))
-    //     }
-    // }
-    
-    // pub async fn subscribe_ep(&self, endpoint:&str) -> Result<Value, Error> {
-    //     let url = self.url_base.to_string() + endpoint;
-    //     println!("URL is {}", url);
-
-    //     let client = reqwest::Client::new();
-    //     let res = client.post(&url).send().await?;
-    //     println!("Status code is {}", res.status());
-
-    //     if res.status().as_u16() == 204 {
-    //         Ok(res.json().await?)
-    //     } else {
-    //         Err(anyhow!(
-    //             "Dapr failed to complete the pub request! Status code: {}",
-    //             res.status().as_str()
-    //         ))
-    //     }
-    // }
-
 }
