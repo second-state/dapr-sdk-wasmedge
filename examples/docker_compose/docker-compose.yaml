@@ -1,0 +1,41 @@
+version: '3'
+services:
+  ############################
+  # echo app + Dapr sidecar
+  ############################
+  echoapp-dapr:
+    build: "../echo"
+    ports:
+      - 50002:50002
+      - 9004:9004
+      - 3502:3502
+    depends_on:
+      - placement
+      - redis
+    network_mode: "host"
+    
+  ############################
+  # wasmedge app
+  ############################
+  testapp-dapr:
+    build: "../tests"
+    depends_on:
+      - echoapp-dapr
+    network_mode: "host"
+
+
+  placement:
+    image: "daprio/dapr"
+    command: ["./placement", "-port", "50005"]
+    ports:
+      - "50005:50005"
+    network_mode: "host"
+
+  ############################
+  # Redis state store
+  ############################
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+    network_mode: "host"
