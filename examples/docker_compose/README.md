@@ -14,6 +14,14 @@ docker run --rm --runtime=io.containerd.wasmedge.v1 --platform=wasi/wasm seconds
 
 If the above command is successful, to start the docker containers use the following command:
 
+It is necessary to change the path of secrets:
+
+```sh
+sed -i 's/\..\/config\/secrets.json/\/opt\/config\/secrets.json/g' ../config/local-secret-store.yaml
+```
+
+After changing the secrets path:
+
 ```sh
 docker-compose up
 ```
@@ -23,3 +31,6 @@ To stop the containers:
 ```sh
 docker-compose down
 ```
+
+Output:
+[![asciicast](https://asciinema.org/a/560561.svg)](https://asciinema.org/a/560561)

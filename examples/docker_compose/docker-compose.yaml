@@ -13,6 +13,8 @@ services:
       - placement
       - redis
     network_mode: "host"
+    volumes:
+    - ../config:/opt/config
     
   ############################
   # wasmedge app
