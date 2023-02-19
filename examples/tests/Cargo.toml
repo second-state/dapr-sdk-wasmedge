@@ -6,4 +6,5 @@ edition = "2021"
 [dependencies]
 serde_json = "1.0"
 tokio_wasi = { version = "1.21", features = ["rt", "macros", "net", "time"]}
-dapr_sdk_wasi = { path = "../../" }
+dapr_sdk_wasi = {  git = "https://github.com/SAtacker/dapr-sdk-wasi", version = "0.0.1" }
+

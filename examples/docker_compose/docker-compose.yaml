@@ -1,30 +1,56 @@
 version: '3'
 services:
   ############################
-  # echo app + Dapr sidecar
+  # Dapr Sidecar
   ############################
   echoapp-dapr:
+    image: "daprio/daprd:edge"
+    command: ["./daprd",
+      "-app-id", "echo-service",
+      "-app-port", "9004",
+      "-dapr-grpc-port", "50002",
+      "-dapr-http-port","3502",
+      "-log-level", "debug",
+      "-placement-host-address", "placement:50005",
+      "-components-path","/opt/config"]
+    depends_on:
+      - placement
+      - redis
+    ports:
+      - 50002:50002
+      - 9004:9004
+      - 3502:3502
+    network_mode: "host"
+    volumes:
+    - ../config:/opt/config
+
+  ############################
+  # echo app
+  ############################
+  echoapp:
     build: "../echo"
+    platform: wasi/wasm
+    runtime: io.containerd.wasmedge.v1
     ports:
       - 50002:50002
       - 9004:9004
       - 3502:3502
     depends_on:
-      - placement
-      - redis
+      - echoapp-dapr
     network_mode: "host"
-    volumes:
-    - ../config:/opt/config
+    # volumes:
+    # - ../config:/opt/config
     
   ############################
   # wasmedge app
   ############################
   testapp-dapr:
     build: "../tests"
+    platform: wasi/wasm
+    runtime: io.containerd.wasmedge.v1
     depends_on:
-      - echoapp-dapr
+      - echoapp
     network_mode: "host"
-
 
   placement:
     image: "daprio/dapr"
