@@ -12,14 +12,13 @@ services:
       "-dapr-http-port","3502",
       "-log-level", "debug",
       "-placement-host-address", "placement:50005",
-      "-components-path","/opt/config"]
+      "-components-path","/opt/config",
+      "-metrics-port","9120",
+      "-enable-metrics", "false"]
     depends_on:
       - placement
       - redis
-    ports:
-      - 50002:50002
-      - 9004:9004
-      - 3502:3502
+      - echoapp
     network_mode: "host"
     volumes:
     - ../config:/opt/config
@@ -31,12 +30,9 @@ services:
     build: "../echo"
     platform: wasi/wasm
     runtime: io.containerd.wasmedge.v1
-    ports:
-      - 50002:50002
-      - 9004:9004
-      - 3502:3502
     depends_on:
-      - echoapp-dapr
+      - placement
+      - redis
     network_mode: "host"
     # volumes:
     # - ../config:/opt/config
@@ -44,19 +40,17 @@ services:
   ############################
   # wasmedge app
   ############################
-  testapp-dapr:
+  testapp:
     build: "../tests"
     platform: wasi/wasm
     runtime: io.containerd.wasmedge.v1
     depends_on:
-      - echoapp
+      - echoapp-dapr
     network_mode: "host"
 
   placement:
     image: "daprio/dapr"
     command: ["./placement", "-port", "50005"]
-    ports:
-      - "50005:50005"
     network_mode: "host"
 
   ############################
