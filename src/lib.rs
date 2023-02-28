@@ -1,6 +1,7 @@
 use anyhow::{anyhow, Error};
 use serde_json::Value;
 use std::collections::HashMap;
+use std::env;
 
 pub struct Dapr {
     pub url_base: String,
@@ -8,8 +9,13 @@ pub struct Dapr {
 
 impl Dapr {
     pub fn new(port: u32) -> Dapr {
+        let u = match env::var_os("DAPR_URL") {
+            Some(v) => v.into_string().unwrap(),
+            None => u = "http://localhost:".to_string(),
+        };
+
         Dapr {
-            url_base: "http://localhost:".to_string() + &(port.to_string()) + "/v1.0/",
+            url_base: u + &(port.to_string()) + "/v1.0/",
         }
     }
 }

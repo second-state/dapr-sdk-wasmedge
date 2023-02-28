@@ -18,8 +18,10 @@ services:
     depends_on:
       - placement
       - redis
-      - echoapp
-    network_mode: "host"
+      # - echoapp
+    network_mode: "service:echoapp"
+    # networks:
+    #   - docker-compose
     volumes:
     - ../config:/opt/config
 
@@ -29,13 +31,17 @@ services:
   echoapp:
     build: "../echo"
     platform: wasi/wasm
-    runtime: io.containerd.wasmedge.v1
+    runtime: "io.containerd.wasmedge.v1"
     depends_on:
       - placement
       - redis
-    network_mode: "host"
-    # volumes:
-    # - ../config:/opt/config
+    # network_mode: "host"
+    ports:
+      - 9004:9004
+    networks:
+      - docker-compose
+    volumes:
+    - ../config:/opt/config
     
   ############################
   # wasmedge app
@@ -46,18 +52,28 @@ services:
     runtime: io.containerd.wasmedge.v1
     depends_on:
       - echoapp-dapr
-    network_mode: "host"
+    # network_mode: "host"
+    # network_mode: "service:echoapp-dapr"
+    networks:
+      - docker-compose
+    ports:
+      - 3502:3502
 
   placement:
     image: "daprio/dapr"
     command: ["./placement", "-port", "50005"]
-    network_mode: "host"
+    networks:
+      - docker-compose
 
   ############################
   # Redis state store
   ############################
   redis:
     image: "redis:alpine"
+    networks:
+      - docker-compose
     ports:
       - "6379:6379"
-    network_mode: "host"
+
+networks:
+    docker-compose:
