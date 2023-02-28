@@ -1,7 +1,6 @@
 use anyhow::{anyhow, Error};
 use serde_json::Value;
 use std::collections::HashMap;
-use std::env;
 
 pub struct Dapr {
     pub url_base: String,
