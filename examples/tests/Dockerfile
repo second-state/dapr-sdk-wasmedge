@@ -16,6 +16,7 @@ RUN curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/i
 FROM buildbase AS build
 COPY Cargo.toml .
 COPY src ./src
+ENV EXAMPLE_DAPR_URL "http://echoapp-dapr"
 # Build the Wasm binary
 RUN --mount=type=cache,target=/usr/local/cargo/git/db \
     --mount=type=cache,target=/usr/local/cargo/registry/cache \

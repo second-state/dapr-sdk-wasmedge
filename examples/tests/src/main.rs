@@ -3,12 +3,17 @@ use tokio::time::{sleep, Duration};
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let url = match env::var_os("EXAMPLE_DAPR_URL") {
+        Some(v) => v.into_string().unwrap(),
+        None => "http://localhost".to_string(),
+    };
+
     println!("App started. Wait for Dapr sidecar to start ...");
     sleep(Duration::from_millis(1500)).await;
     println!("1500 ms have elapsed");
 
     // This is the echo sidecar
-    let client = dapr::Dapr::new(3502);
+    let client = dapr::Dapr::new(3502, url);
     client.is_healthy().await?;
     println!("Dapr echo is healthy!");
 
