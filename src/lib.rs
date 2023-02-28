@@ -11,7 +11,7 @@ impl Dapr {
     pub fn new(port: u32) -> Dapr {
         let u = match env::var_os("DAPR_URL") {
             Some(v) => v.into_string().unwrap(),
-            None => u = "http://localhost:".to_string(),
+            None => "http://localhost:".to_string(),
         };
 
         Dapr {
