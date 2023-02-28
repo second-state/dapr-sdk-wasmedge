@@ -12,18 +12,12 @@ services:
       "-dapr-http-port","3502",
       "-log-level", "debug",
       "-placement-host-address", "placement:50005",
-      "-components-path","/opt/config",
-      "-metrics-port","9120",
-      "-enable-metrics", "false"]
+      "-components-path","/opt/config"]
     depends_on:
-      - placement
-      - redis
-      # - echoapp
+      - echoapp
     network_mode: "service:echoapp"
-    # networks:
-    #   - docker-compose
     volumes:
-    - ../config:/opt/config
+      - ../config:/opt/config
 
   ############################
   # echo app
@@ -35,8 +29,10 @@ services:
     depends_on:
       - placement
       - redis
-    # network_mode: "host"
     ports:
+      - 50002:50002
+      - 3502:3502
+      - 9120:9120
       - 9004:9004
     networks:
       - docker-compose
@@ -50,20 +46,22 @@ services:
     build: "../tests"
     platform: wasi/wasm
     runtime: io.containerd.wasmedge.v1
+    # restart: unless-stopped
     depends_on:
-      - echoapp-dapr
+      - placement
+      - redis
     # network_mode: "host"
-    # network_mode: "service:echoapp-dapr"
+    environment:
+      EXAMPLE_DAPR_URL: "http://echoapp"
     networks:
       - docker-compose
-    ports:
-      - 3502:3502
-
   placement:
     image: "daprio/dapr"
     command: ["./placement", "-port", "50005"]
     networks:
       - docker-compose
+    ports:
+      - "50005:50005"
 
   ############################
   # Redis state store
