@@ -33,4 +33,4 @@ docker-compose down
 ```
 
 Output:
-[![asciicast](https://asciinema.org/a/560561.svg)](https://asciinema.org/a/560561)
+[![asciicast](https://asciinema.org/a/563689.svg)](https://asciinema.org/a/563689)
