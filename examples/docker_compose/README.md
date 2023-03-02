@@ -18,6 +18,7 @@ It is necessary to change the path of secrets:
 
 ```sh
 sed -i 's/\..\/config\/secrets.json/\/opt\/config\/secrets.json/g' ../config/local-secret-store.yaml
+sed -i 's/localhost\:/redis\:/g' ../config/*.yaml
 ```
 
 After changing the secrets path:
