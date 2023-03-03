@@ -1,0 +1,70 @@
+version: '3'
+services:
+  ############################
+  # Dapr Sidecar
+  ############################
+  echoapp-dapr:
+    image: "daprio/daprd:edge"
+    command: ["./daprd",
+      "-app-id", "echo-service",
+      "-app-port", "9004",
+      "-dapr-grpc-port", "50002",
+      "-dapr-http-port","3502",
+      "-log-level", "debug",
+      "-placement-host-address", "placement:50005",
+      "-components-path","/opt/config"]
+    depends_on:
+      - echoapp
+    network_mode: "service:echoapp"
+    volumes:
+      - ../config:/opt/config
+
+  ############################
+  # echo app
+  ############################
+  echoapp:
+    build: "../echo"
+    platform: wasi/wasm
+    runtime: "io.containerd.wasmedge.v1"
+    depends_on:
+      - placement
+      - redis
+    networks:
+      - docker-compose
+    volumes:
+    - ../config:/opt/config
+    
+  ############################
+  # wasmedge app
+  ############################
+  testapp:
+    build: "../tests"
+    platform: wasi/wasm
+    runtime: io.containerd.wasmedge.v1
+    depends_on:
+      - placement
+      - redis
+    environment:
+      EXAMPLE_DAPR_URL: "http://echoapp"
+    networks:
+      - docker-compose
+
+  ############################
+  # Placement
+  ############################
+  placement:
+    image: "daprio/dapr"
+    command: ["./placement", "-port", "50005"]
+    networks:
+      - docker-compose
+
+  ############################
+  # Redis state store
+  ############################
+  redis:
+    image: "redis:alpine"
+    networks:
+      - docker-compose
+
+networks:
+    docker-compose:

@@ -33,7 +33,7 @@ jobs:
     - name: Install WasmEdge
       run: |
         VERSION=0.11.1
-        curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | sudo bash -s -- -e all --version=$VERSION --tf-version=$VERSION --tf-deps-version=$VERSION --tf-tools-version=$VERSION --image-version=$VERSION --image-deps-version=$VERSION  -p /usr/local
+        curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | sudo bash -s -- -e all --version=$VERSION -p /usr/local
         
     - name: Install and init dapr
       run: |
@@ -59,3 +59,5 @@ jobs:
       run: |
         cd examples/echo
         cat server.log
+        if grep -q Received\ from\ A server.log;then echo "Pass: Data received on A";else echo "Fail" && exit 1;fi;
+        if grep -q Received\ from\ B server.log;then echo "Pass: Data received on B";else echo "Fail" && exit 1;fi;
