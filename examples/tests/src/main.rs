@@ -14,7 +14,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     println!("1500 ms have elapsed");
 
     // This is the echo sidecar
-    let client = dapr::Dapr::new(3502, url);
+    let client = dapr::Dapr::new_with_url(3502, url);
     client.is_healthy().await?;
     println!("Dapr echo is healthy!");
 
