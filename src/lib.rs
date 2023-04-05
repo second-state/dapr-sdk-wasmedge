@@ -7,16 +7,10 @@ pub struct Dapr {
 }
 
 impl Dapr {
-    pub fn new_with_url(port: u32, url_base_: String) -> Dapr {
+    pub fn new(url_base_: String) -> Dapr {
         Dapr {
-            url_base: url_base_.to_string() + ":" + &(port.to_string()) + "/v1.0/",
+            url_base: url_base_.to_string() + "/v1.0/",
         }
-    }
-}
-
-impl Dapr {
-    pub fn new(port: u32) -> Dapr {
-        Dapr::new_with_url(port, "http://localhost:".to_string())
     }
 }
 
