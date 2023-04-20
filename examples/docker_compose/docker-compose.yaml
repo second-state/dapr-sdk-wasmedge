@@ -45,7 +45,7 @@ services:
       - placement
       - redis
     environment:
-      EXAMPLE_DAPR_URL: "http://echoapp"
+      EXAMPLE_DAPR_URL: "http://echoapp:3502"
     networks:
       - docker-compose
 
