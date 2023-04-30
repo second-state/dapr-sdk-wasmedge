@@ -38,7 +38,7 @@ async fn handle_request(req: Request<Body>) -> Result<Response<Body>, anyhow::Er
             json!({
                 "entities":["stormtrooper"],
                 "actorIdleTimeout": "1h",
-                "actorScanInterval": "30s",
+                "actorScanInterval": "1h",
                 "drainOngoingCallTimeout": "30s",
                 "drainRebalancedActors": true,
                 "reentrancy": {
