@@ -166,11 +166,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         .await?;
     println!("Actor get reminder response: {}", val);
 
-    let val = client
-        .actor_invoke_reminder("stormtrooper", "50", "checkRebels")
-        .await?;
-    println!("Actor invoke response: {}", val);
-
     client
         .actor_delete_reminder("stormtrooper", "50", "checkRebels")
         .await?;
@@ -191,14 +186,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     println!("Actor create reminder response: {}", val);
 
     client
-        .actor_invoke_timer("stormtrooper", "50", "checkRebels")
-        .await?;
-
-    client
         .actor_delete_timer("stormtrooper", "50", "checkRebels")
         .await?;
-
-    client.actor_deactivate("stormtrooper", "50").await?;
 
     Ok(())
 }
