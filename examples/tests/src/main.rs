@@ -147,7 +147,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         .await?;
     println!("Actor state key response: {}", val);
 
-    let val = client
+    client
         .actor_create_reminder(
             "stormtrooper",
             "50",
@@ -159,7 +159,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             }),
         )
         .await?;
-    println!("Actor create reminder response: {}", val);
+    println!("Actor create reminder successful");
 
     let val = client
         .actor_get_reminder("stormtrooper", "50", "checkRebels")
