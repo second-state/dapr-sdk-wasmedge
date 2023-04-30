@@ -177,7 +177,7 @@ impl Dapr {
         let res = client.put(&url).send().await?;
         println!("Status code is {}", res.status().as_str());
 
-        if res.status().as_u16() == 204 {
+        if res.status().as_u16() == 200 {
             Ok(res.json().await?)
         } else {
             Err(anyhow!(
@@ -259,7 +259,7 @@ impl Dapr {
         let res = client.post(&url).json(&parameters).send().await?;
         println!("Status code is {}", res.status().as_str());
 
-        if res.status().as_u16() == 204 {
+        if res.status().as_u16() == 200 {
             Ok(res.json().await?)
         } else {
             Err(anyhow!(
@@ -328,8 +328,17 @@ impl Dapr {
             + name;
         println!("URL is {}", url);
 
-        let json = reqwest::get(&url).await?.json().await?;
-        Ok(json)
+        let res = reqwest::get(&url).await?;
+        println!("Status code is {}", res.status().as_str());
+
+        if res.status().as_u16() == 200 {
+            Ok(res.json().await?)
+        } else {
+            Err(anyhow!(
+                "Dapr failed to complete the pub request! Status code: {}",
+                res.status().as_str()
+            ))
+        }
     }
 
     pub async fn actor_delete_reminder(
@@ -409,5 +418,4 @@ impl Dapr {
             ))
         }
     }
-
 }
