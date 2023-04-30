@@ -326,7 +326,7 @@ impl Dapr {
         actor_id: &str,
         name: &str,
         parameters: Value,
-    ) -> Result<Value, Error> {
+    ) -> Result<(), Error> {
         let url =
             self.url_base.to_string() + "actors/" + actor_type + "/" + actor_id + "/timers/" + name;
         println!("URL is {}", url);
@@ -336,7 +336,7 @@ impl Dapr {
         println!("Status code is {}", res.status().as_str());
 
         if res.status().as_u16() == 204 {
-            Ok(res.json().await?)
+            Ok(())
         } else {
             Err(anyhow!(
                 "Dapr failed to complete the create timer request! Status code: {}",
