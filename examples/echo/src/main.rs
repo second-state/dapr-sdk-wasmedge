@@ -65,7 +65,11 @@ async fn handle_request(req: Request<Body>) -> Result<Response<Body>, anyhow::Er
 
         (&Method::PUT, "/actors/stormtrooper/50/method/performAction") =>  {
             println!("Perform Action method invoked");
-            Ok(Response::default())
+            Ok(Response::new(Body::from(
+                json!({
+                    "Storm": "Trooper"
+                  }).to_string()
+            )))
         },
 
         (&Method::PUT, "/actors/stormtrooper/50/method/remind/checkRebels") =>  {
