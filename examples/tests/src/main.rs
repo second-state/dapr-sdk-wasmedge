@@ -114,5 +114,91 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     client.publish("pubsub", "B", kvs).await?;
     println!("Published to pubsubname: pubsub topic: B");
 
+    let val = client
+        .actor_invoke_method("stormtrooper", "50", "performAction")
+        .await?;
+    println!("Actor invoke method response: {}", val);
+
+    let val = client
+        .actor_state(
+            "stormtrooper",
+            "50",
+            json!([
+             {
+               "operation": "upsert",
+               "request": {
+                 "key": "key1",
+                 "value": "myData"
+               }
+             },
+             {
+               "operation": "delete",
+               "request": {
+                 "key": "key2"
+               }
+             }
+            ]),
+        )
+        .await?;
+    println!("Actor state response: {}", val);
+
+    let val = client
+        .actor_state_key("stormtrooper", "50", "location")
+        .await?;
+    println!("Actor state key response: {}", val);
+
+    let val = client
+        .actor_create_reminder(
+            "stormtrooper",
+            "50",
+            "checkRebels",
+            json!({
+              "data": "someData",
+              "dueTime": "1m",
+              "period": "20s"
+            }),
+        )
+        .await?;
+    println!("Actor create reminder response: {}", val);
+
+    let val = client
+        .actor_get_reminder("stormtrooper", "50", "checkRebels")
+        .await?;
+    println!("Actor get reminder response: {}", val);
+
+    let val = client
+        .actor_invoke_reminder("stormtrooper", "50", "checkRebels")
+        .await?;
+    println!("Actor invoke response: {}", val);
+
+    client
+        .actor_delete_reminder("stormtrooper", "50", "checkRebels")
+        .await?;
+
+    let val = client
+        .actor_create_timer(
+            "stormtrooper",
+            "50",
+            "checkRebels",
+            json!({
+              "data": "someData",
+              "dueTime": "1m",
+              "period": "20s",
+              "callback": "myEventHandler"
+            }),
+        )
+        .await?;
+    println!("Actor create reminder response: {}", val);
+
+    client
+        .actor_invoke_timer("stormtrooper", "50", "checkRebels")
+        .await?;
+
+    client
+        .actor_delete_timer("stormtrooper", "50", "checkRebels")
+        .await?;
+
+    client.actor_deactivate("stormtrooper", "50").await?;
+
     Ok(())
 }

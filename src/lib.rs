@@ -157,4 +157,274 @@ impl Dapr {
             ))
         }
     }
+
+    pub async fn actor_invoke_method(
+        &self,
+        actor_type: &str,
+        actor_id: &str,
+        method: &str,
+    ) -> Result<Value, Error> {
+        let url = self.url_base.to_string()
+            + "actors/"
+            + actor_type
+            + "/"
+            + actor_id
+            + "/method/"
+            + method;
+        println!("URL is {}", url);
+
+        let client = reqwest::Client::new();
+        let res = client.put(&url).send().await?;
+        println!("Status code is {}", res.status().as_str());
+
+        if res.status().as_u16() == 204 {
+            Ok(res.json().await?)
+        } else {
+            Err(anyhow!(
+                "Dapr failed to complete the pub request! Status code: {}",
+                res.status().as_str()
+            ))
+        }
+    }
+
+    pub async fn actor_invoke_reminder(
+        &self,
+        actor_type: &str,
+        actor_id: &str,
+        name: &str,
+    ) -> Result<Value, Error> {
+        let url = self.url_base.to_string()
+            + "actors/"
+            + actor_type
+            + "/"
+            + actor_id
+            + "/method/"
+            + "/remind/"
+            + name;
+        println!("URL is {}", url);
+
+        let client = reqwest::Client::new();
+        let res = client.put(&url).send().await?;
+        println!("Status code is {}", res.status().as_str());
+
+        if res.status().as_u16() == 204 {
+            Ok(res.json().await?)
+        } else {
+            Err(anyhow!(
+                "Dapr failed to complete the pub request! Status code: {}",
+                res.status().as_str()
+            ))
+        }
+    }
+
+    pub async fn actor_invoke_timer(
+        &self,
+        actor_type: &str,
+        actor_id: &str,
+        name: &str,
+    ) -> Result<(), Error> {
+        let url = self.url_base.to_string()
+            + "actors/"
+            + actor_type
+            + "/"
+            + actor_id
+            + "/method/timer/"
+            + name;
+        println!("URL is {}", url);
+
+        let client = reqwest::Client::new();
+        let res = client.put(&url).send().await?;
+        println!("Status code is {}", res.status().as_str());
+
+        if res.status().as_u16() == 204 {
+            Ok(())
+        } else {
+            Err(anyhow!(
+                "Dapr failed to complete the pub request! Status code: {}",
+                res.status().as_str()
+            ))
+        }
+    }
+
+    pub async fn actor_state(
+        &self,
+        actor_type: &str,
+        actor_id: &str,
+        parameters: Value,
+    ) -> Result<Value, Error> {
+        let url = self.url_base.to_string() + "actors/" + actor_type + "/" + actor_id + "/state";
+        println!("URL is {}", url);
+
+        let client = reqwest::Client::new();
+        let res = client.post(&url).json(&parameters).send().await?;
+        println!("Status code is {}", res.status().as_str());
+
+        if res.status().as_u16() == 204 {
+            Ok(res.json().await?)
+        } else {
+            Err(anyhow!(
+                "Dapr failed to complete the pub request! Status code: {}",
+                res.status().as_str()
+            ))
+        }
+    }
+
+    pub async fn actor_state_key(
+        &self,
+        actor_type: &str,
+        actor_id: &str,
+        key: &str,
+    ) -> Result<Value, Error> {
+        let url =
+            self.url_base.to_string() + "actors/" + actor_type + "/" + actor_id + "/state/" + key;
+        println!("URL is {}", url);
+
+        let json = reqwest::get(&url).await?.json().await?;
+        Ok(json)
+    }
+
+    pub async fn actor_create_reminder(
+        &self,
+        actor_type: &str,
+        actor_id: &str,
+        name: &str,
+        parameters: Value,
+    ) -> Result<Value, Error> {
+        let url = self.url_base.to_string()
+            + "actors/"
+            + actor_type
+            + "/"
+            + actor_id
+            + "/reminders/"
+            + name;
+        println!("URL is {}", url);
+
+        let client = reqwest::Client::new();
+        let res = client.post(&url).json(&parameters).send().await?;
+        println!("Status code is {}", res.status().as_str());
+
+        if res.status().as_u16() == 204 {
+            Ok(res.json().await?)
+        } else {
+            Err(anyhow!(
+                "Dapr failed to complete the pub request! Status code: {}",
+                res.status().as_str()
+            ))
+        }
+    }
+
+    pub async fn actor_get_reminder(
+        &self,
+        actor_type: &str,
+        actor_id: &str,
+        name: &str,
+    ) -> Result<Value, Error> {
+        let url = self.url_base.to_string()
+            + "actors/"
+            + actor_type
+            + "/"
+            + actor_id
+            + "/reminders/"
+            + name;
+        println!("URL is {}", url);
+
+        let json = reqwest::get(&url).await?.json().await?;
+        Ok(json)
+    }
+
+    pub async fn actor_delete_reminder(
+        &self,
+        actor_type: &str,
+        actor_id: &str,
+        name: &str,
+    ) -> Result<(), Error> {
+        let url = self.url_base.to_string()
+            + "actors/"
+            + actor_type
+            + "/"
+            + actor_id
+            + "/reminders/"
+            + name;
+        println!("URL is {}", url);
+
+        let client = reqwest::Client::new();
+        let res = client.delete(&url).send().await?;
+        println!("Status code is {}", res.status().as_str());
+
+        if res.status().as_u16() == 204 {
+            Ok(())
+        } else {
+            Err(anyhow!(
+                "Dapr failed to complete the pub request! Status code: {}",
+                res.status().as_str()
+            ))
+        }
+    }
+
+    pub async fn actor_create_timer(
+        &self,
+        actor_type: &str,
+        actor_id: &str,
+        name: &str,
+        parameters: Value,
+    ) -> Result<Value, Error> {
+        let url =
+            self.url_base.to_string() + "actors/" + actor_type + "/" + actor_id + "/timers/" + name;
+        println!("URL is {}", url);
+
+        let client = reqwest::Client::new();
+        let res = client.post(&url).json(&parameters).send().await?;
+        println!("Status code is {}", res.status().as_str());
+
+        if res.status().as_u16() == 204 {
+            Ok(res.json().await?)
+        } else {
+            Err(anyhow!(
+                "Dapr failed to complete the pub request! Status code: {}",
+                res.status().as_str()
+            ))
+        }
+    }
+
+    pub async fn actor_delete_timer(
+        &self,
+        actor_type: &str,
+        actor_id: &str,
+        name: &str,
+    ) -> Result<(), Error> {
+        let url =
+            self.url_base.to_string() + "actors/" + actor_type + "/" + actor_id + "/timers/" + name;
+        println!("URL is {}", url);
+
+        let client = reqwest::Client::new();
+        let res = client.delete(&url).send().await?;
+        println!("Status code is {}", res.status().as_str());
+
+        if res.status().as_u16() == 204 {
+            Ok(())
+        } else {
+            Err(anyhow!(
+                "Dapr failed to complete the pub request! Status code: {}",
+                res.status().as_str()
+            ))
+        }
+    }
+
+    pub async fn actor_deactivate(&self, actor_type: &str, actor_id: &str) -> Result<(), Error> {
+        let url = self.url_base.to_string() + "actors/" + actor_type + "/" + actor_id;
+        println!("URL is {}", url);
+
+        let client = reqwest::Client::new();
+        let res = client.delete(&url).send().await?;
+        println!("Status code is {}", res.status().as_str());
+
+        if res.status().as_u16() == 204 {
+            Ok(())
+        } else {
+            Err(anyhow!(
+                "Dapr failed to complete the pub request! Status code: {}",
+                res.status().as_str()
+            ))
+        }
+    }
 }
