@@ -192,7 +192,7 @@ impl Dapr {
         actor_type: &str,
         actor_id: &str,
         parameters: Value,
-    ) -> Result<Value, Error> {
+    ) -> Result<(), Error> {
         let url = self.url_base.to_string() + "actors/" + actor_type + "/" + actor_id + "/state";
         println!("URL is {}", url);
 
@@ -201,7 +201,7 @@ impl Dapr {
         println!("Status code is {}", res.status().as_str());
 
         if res.status().as_u16() == 204 {
-            Ok(res.json().await?)
+            Ok(())
         } else {
             Err(anyhow!(
                 "Dapr failed to complete the actor state request! Status code: {}",

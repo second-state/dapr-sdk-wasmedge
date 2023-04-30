@@ -119,7 +119,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         .await?;
     println!("Actor invoke method response: {}", val);
 
-    let val = client
+    client
         .actor_state(
             "stormtrooper",
             "50",
@@ -128,7 +128,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
                "operation": "upsert",
                "request": {
                  "key": "key1",
-                 "value": "myData"
+                 "location": "Earth"
                }
              },
              {
@@ -140,7 +140,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             ]),
         )
         .await?;
-    println!("Actor state response: {}", val);
+    println!("Actor state transaction is performed");
 
     let val = client
         .actor_state_key("stormtrooper", "50", "location")
