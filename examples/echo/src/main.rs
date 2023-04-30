@@ -55,7 +55,7 @@ async fn handle_request(req: Request<Body>) -> Result<Response<Body>, anyhow::Er
                         }
                     }
                 ]
-              })
+              }).to_string()
         ))),
 
         (&Method::DELETE, "/actors/stormtrooper/50") =>  {
