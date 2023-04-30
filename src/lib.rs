@@ -181,70 +181,11 @@ impl Dapr {
             Ok(res.json().await?)
         } else {
             Err(anyhow!(
-                "Dapr failed to complete the pub request! Status code: {}",
+                "Dapr failed to complete the actor invoke request! Status code: {}",
                 res.status().as_str()
             ))
         }
     }
-
-    // pub async fn actor_invoke_reminder(
-    //     &self,
-    //     actor_type: &str,
-    //     actor_id: &str,
-    //     name: &str,
-    // ) -> Result<Value, Error> {
-    //     let url = self.url_base.to_string()
-    //         + "actors/"
-    //         + actor_type
-    //         + "/"
-    //         + actor_id
-    //         + "/method/"
-    //         + "/remind/"
-    //         + name;
-    //     println!("URL is {}", url);
-
-    //     let client = reqwest::Client::new();
-    //     let res = client.put(&url).send().await?;
-    //     println!("Status code is {}", res.status().as_str());
-
-    //     if res.status().as_u16() == 204 {
-    //         Ok(res.json().await?)
-    //     } else {
-    //         Err(anyhow!(
-    //             "Dapr failed to complete the pub request! Status code: {}",
-    //             res.status().as_str()
-    //         ))
-    //     }
-    // }
-
-    // pub async fn actor_invoke_timer(
-    //     &self,
-    //     actor_type: &str,
-    //     actor_id: &str,
-    //     name: &str,
-    // ) -> Result<(), Error> {
-    //     let url = self.url_base.to_string()
-    //         + "actors/"
-    //         + actor_type
-    //         + "/"
-    //         + actor_id
-    //         + "/method/timer/"
-    //         + name;
-    //     println!("URL is {}", url);
-
-    //     let client = reqwest::Client::new();
-    //     let res = client.put(&url).send().await?;
-    //     println!("Status code is {}", res.status().as_str());
-
-    //     if res.status().as_u16() == 204 {
-    //         Ok(())
-    //     } else {
-    //         Err(anyhow!(
-    //             "Dapr failed to complete the pub request! Status code: {}",
-    //             res.status().as_str()
-    //         ))
-    //     }
-    // }
 
     pub async fn actor_state(
         &self,
@@ -259,11 +200,11 @@ impl Dapr {
         let res = client.post(&url).json(&parameters).send().await?;
         println!("Status code is {}", res.status().as_str());
 
-        if res.status().as_u16() == 200 {
+        if res.status().as_u16() == 204 {
             Ok(res.json().await?)
         } else {
             Err(anyhow!(
-                "Dapr failed to complete the pub request! Status code: {}",
+                "Dapr failed to complete the actor state request! Status code: {}",
                 res.status().as_str()
             ))
         }
@@ -279,8 +220,17 @@ impl Dapr {
             self.url_base.to_string() + "actors/" + actor_type + "/" + actor_id + "/state/" + key;
         println!("URL is {}", url);
 
-        let json = reqwest::get(&url).await?.json().await?;
-        Ok(json)
+        let res = reqwest::get(&url).await?;
+        println!("Status code is {}", res.status().as_str());
+
+        if res.status().as_u16() == 200 {
+            Ok(res.json().await?)
+        } else {
+            Err(anyhow!(
+                "Dapr failed to complete the get actor state key! Status code: {}",
+                res.status().as_str()
+            ))
+        }
     }
 
     pub async fn actor_create_reminder(
@@ -307,7 +257,7 @@ impl Dapr {
             Ok(res.json().await?)
         } else {
             Err(anyhow!(
-                "Dapr failed to complete the pub request! Status code: {}",
+                "Dapr failed to complete the create reminder request! Status code: {}",
                 res.status().as_str()
             ))
         }
@@ -335,7 +285,7 @@ impl Dapr {
             Ok(res.json().await?)
         } else {
             Err(anyhow!(
-                "Dapr failed to complete the pub request! Status code: {}",
+                "Dapr failed to complete the get reminder request! Status code: {}",
                 res.status().as_str()
             ))
         }
@@ -364,7 +314,7 @@ impl Dapr {
             Ok(())
         } else {
             Err(anyhow!(
-                "Dapr failed to complete the pub request! Status code: {}",
+                "Dapr failed to complete the delete reminder! Status code: {}",
                 res.status().as_str()
             ))
         }
@@ -389,7 +339,7 @@ impl Dapr {
             Ok(res.json().await?)
         } else {
             Err(anyhow!(
-                "Dapr failed to complete the pub request! Status code: {}",
+                "Dapr failed to complete the create timer request! Status code: {}",
                 res.status().as_str()
             ))
         }
@@ -413,7 +363,7 @@ impl Dapr {
             Ok(())
         } else {
             Err(anyhow!(
-                "Dapr failed to complete the pub request! Status code: {}",
+                "Dapr failed to complete the delete timer request! Status code: {}",
                 res.status().as_str()
             ))
         }
