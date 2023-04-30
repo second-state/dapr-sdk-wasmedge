@@ -36,7 +36,7 @@ async fn handle_request(req: Request<Body>) -> Result<Response<Body>, anyhow::Er
 
         (&Method::GET, "/dapr/config") => Ok(Response::new(Body::from(
             json!({
-                "entities":["actorType1", "actorType2"],
+                "entities":["stormtrooper"],
                 "actorIdleTimeout": "1h",
                 "actorScanInterval": "30s",
                 "drainOngoingCallTimeout": "30s",
@@ -47,8 +47,8 @@ async fn handle_request(req: Request<Body>) -> Result<Response<Body>, anyhow::Er
                 },
                 "entitiesConfig": [
                     {
-                        "entities": ["actorType1"],
-                        "actorIdleTimeout": "1m",
+                        "entities": ["stormtrooper"],
+                        "actorIdleTimeout": "10m",
                         "drainOngoingCallTimeout": "10s",
                         "reentrancy": {
                             "enabled": false
