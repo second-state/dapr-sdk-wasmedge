@@ -34,6 +34,53 @@ async fn handle_request(req: Request<Body>) -> Result<Response<Body>, anyhow::Er
             Ok(Response::default())
         },
 
+        (&Method::GET, "/dapr/config") => Ok(Response::new(Body::from(
+            json!({
+                "entities":["stormtrooper"],
+                "actorIdleTimeout": "1h",
+                "actorScanInterval": "1h",
+                "drainOngoingCallTimeout": "30s",
+                "drainRebalancedActors": true,
+                "reentrancy": {
+                  "enabled": true,
+                  "maxStackDepth": 32
+                },
+                "entitiesConfig": [
+                    {
+                        "entities": ["stormtrooper"],
+                        "actorIdleTimeout": "10m",
+                        "drainOngoingCallTimeout": "10s",
+                        "reentrancy": {
+                            "enabled": false
+                        }
+                    }
+                ]
+              }).to_string()
+        ))),
+
+        (&Method::DELETE, "/actors/stormtrooper/50") =>  {
+            println!("Delete req for stormtrooper/50");
+            Ok(Response::default())
+        },
+
+        (&Method::PUT, "/actors/stormtrooper/50/method/performAction") =>  {
+            println!("Perform Action method invoked");
+            Ok(Response::new(Body::from(
+                json!({
+                    "Storm": "Trooper"
+                  }).to_string()
+            )))
+        },
+
+        (&Method::PUT, "/actors/stormtrooper/50/method/remind/checkRebels") =>  {
+            println!("Reminder check rebels invoked");
+            Ok(Response::default())
+        },
+        
+        (&Method::PUT, "/actors/stormtrooper/50/method/timer/checkRebels") =>  {
+            println!("Timer check rebels invoked");
+            Ok(Response::default())
+        },
 
         _ => {
             let mut not_found = Response::default();
