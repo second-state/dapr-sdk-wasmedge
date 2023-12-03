@@ -4,19 +4,21 @@ use std::collections::HashMap;
 
 pub struct Dapr {
     pub url_base: String,
+    pub api_token: String,
 }
 
 impl Dapr {
-    pub fn new_with_url(url_base_: String) -> Dapr {
+    pub fn new_with_url(url_base_: String, api_token_: String) -> Dapr {
         Dapr {
-            url_base: url_base_.to_string() + "/v1.0/",
+            url_base: url_base_ + "/v1.0/",
+            api_token: api_token_,
         }
     }
 }
 
 impl Dapr {
     pub fn new(port: u32) -> Dapr {
-        Dapr::new_with_url("http://localhost:".to_string() + &port.to_string())
+        Dapr::new_with_url("http://localhost:".to_string() + &port.to_string(), "".to_string())
     }
 }
 
@@ -31,7 +33,7 @@ impl Dapr {
         println!("URL is {}", url);
 
         let client = reqwest::Client::new();
-        let json = client.post(&url).json(&kvs).send().await?.json().await?;
+        let json = client.post(&url).header("dapr-api-token", self.api_token.as_str()).json(&kvs).send().await?.json().await?;
         Ok(json)
     }
 
@@ -40,7 +42,7 @@ impl Dapr {
         println!("URL is {}", url);
 
         let client = reqwest::Client::new();
-        let res = client.post(&url).json(&kvs).send().await?;
+        let res = client.post(&url).header("dapr-api-token", self.api_token.as_str()).json(&kvs).send().await?;
 
         if res.status().as_u16() == 204 {
             Ok(())
@@ -56,7 +58,8 @@ impl Dapr {
         let url = self.url_base.to_string() + "state/" + store_name + "/" + key;
         println!("URL is {}", url);
 
-        let json = reqwest::get(&url).await?.json().await?;
+        let client = reqwest::Client::new();
+        let json = client.get(&url).header("dapr-api-token", self.api_token.as_str()).send().await?.json().await?;
         Ok(json)
     }
 
@@ -72,7 +75,7 @@ impl Dapr {
         data.insert("keys", keys);
 
         let client = reqwest::Client::new();
-        let json = client.post(&url).json(&data).send().await?.json().await?;
+        let json = client.post(&url).header("dapr-api-token", self.api_token.as_str()).json(&data).send().await?.json().await?;
         Ok(json)
     }
 
@@ -81,7 +84,7 @@ impl Dapr {
         println!("URL is {}", url);
 
         let client = reqwest::Client::new();
-        let res = client.delete(&url).send().await?;
+        let res = client.delete(&url).header("dapr-api-token", self.api_token.as_str()).send().await?;
 
         if res.status().as_u16() == 204 {
             Ok(())
@@ -98,7 +101,7 @@ impl Dapr {
         println!("URL is {}", url);
 
         let client = reqwest::Client::new();
-        let res = client.post(&url).json(&ops).send().await?;
+        let res = client.post(&url).header("dapr-api-token", self.api_token.as_str()).json(&ops).send().await?;
 
         if res.status().as_u16() == 204 {
             Ok(())
@@ -114,7 +117,8 @@ impl Dapr {
         let url = self.url_base.to_string() + "secrets/" + store_name + "/" + key;
         println!("URL is {}", url);
 
-        let json = reqwest::get(&url).await?.json().await?;
+        let client = reqwest::Client::new();
+        let json = client.get(&url).header("dapr-api-token", self.api_token.as_str()).send().await?.json().await?;
         Ok(json)
     }
 
@@ -122,7 +126,8 @@ impl Dapr {
         let url = self.url_base.to_string() + "healthz/";
         println!("URL is {}", url);
 
-        let res = reqwest::get(&url).await?;
+        let client = reqwest::Client::new();
+        let res = client.get(&url).header("dapr-api-token", self.api_token.as_str()).send().await?;
         println!("Status code is {}", res.status().as_str());
 
         if res.status().as_u16() == 204 {
@@ -145,7 +150,7 @@ impl Dapr {
         println!("URL is {}", url);
 
         let client = reqwest::Client::new();
-        let res = client.post(&url).json(&metadata).send().await?;
+        let res = client.post(&url).header("dapr-api-token", self.api_token.as_str()).json(&metadata).send().await?;
         println!("Status code is {}", res.status().as_str());
 
         if res.status().as_u16() == 204 {
